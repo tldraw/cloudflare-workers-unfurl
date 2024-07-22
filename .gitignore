@@ -1,0 +1,4 @@
+unfurl.d.ts
+node_modules
+.*
+!.gitignore

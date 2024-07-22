@@ -1,0 +1,22 @@
+{
+  "name": "cloudflare-workers-unfurl",
+  "version": "0.0.1",
+  "description": "Unfurl urls in cloudflare workers using HTMLRewriter",
+  "main": "unfurl.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepack": "tsc"
+  },
+  "author": "David Sheldrick",
+  "license": "ISC",
+  "types": "unfurl.d.ts",
+  "files": [
+    "unfurl.js",
+    "unfurl.d.ts"
+  ],
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240718.0",
+    "typescript": "^5.5.3"
+  }
+}
