@@ -9,7 +9,7 @@
     "prepack": "tsc"
   },
   "author": "David Sheldrick",
-  "license": "ISC",
+  "license": "MIT",
   "types": "unfurl.d.ts",
   "files": [
     "unfurl.js",
