@@ -19,15 +19,21 @@
 
 /**
  * @typedef {Object} UnfurledData
- * @property {string|undefined} title - The title extracted from the URL.
- * @property {string|undefined} description - The description extracted from the URL.
- * @property {string|undefined} image - The image URL extracted from the URL.
- * @property {string|undefined} favicon - The favicon URL extracted from the URL.
+ * @property {string} [title] - The title extracted from the URL.
+ * @property {string} [description] - The description extracted from the URL.
+ * @property {string} [image] - The image URL extracted from the URL.
+ * @property {string} [favicon] - The favicon URL extracted from the URL.
  */
 
 /**
  * @typedef {'bad-param' | 'failed-fetch'} UnfurlError
  */
+
+const validContentTypes = [
+  "text/html",
+  "application/xhtml+xml",
+  "application/xml",
+];
 
 /**
  * Handles the unfurling of a URL by extracting metadata such as title, description, image, and favicon.
@@ -51,11 +57,24 @@ export async function unfurl(url) {
   const icon$ = new IconExtractor();
 
   try {
+    const headers = new Headers();
+    for (const contentType of validContentTypes) {
+      headers.append("accept", contentType);
+    }
+    const res = await fetch(url, { headers });
+    if (
+      !res.ok ||
+      !validContentTypes.some((contentType) =>
+        res.headers.get("content-type")?.includes(contentType)
+      )
+    ) {
+      return { ok: false, error: "failed-fetch" };
+    }
     await new HTMLRewriter()
       .on("meta", meta$)
       .on("title", title$)
       .on("link", icon$)
-      .transform(await fetch(url))
+      .transform(res)
       .blob();
   } catch {
     return { ok: false, error: "failed-fetch" };
