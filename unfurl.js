@@ -56,11 +56,7 @@ function isValidContentType(contentType) {
  * @returns {Promise<Result<UnfurledData, UnfurlError>>} - A promise that resolves to an object containing the extracted metadata, or null if an error occurs.
  */
 export async function unfurl(url) {
-  if (
-    typeof url !== "string" ||
-    !url.startsWith("http://") ||
-    !url.startsWith("https://")
-  ) {
+  if (typeof url !== "string" || !url.match(/^https?:\/\//)) {
     return { ok: false, error: "bad-param" };
   }
 
