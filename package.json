@@ -1,7 +1,14 @@
 {
   "name": "cloudflare-workers-unfurl",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Unfurl urls in cloudflare workers using HTMLRewriter",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tldraw/cloudflare-workers-unfurl"
+  },
+  "bugs": {
+    "url": "https://github.com/tldraw/cloudflare-workers-unfurl/issues"
+  },
   "keywords": [
     "cloudflare",
     "workers",
