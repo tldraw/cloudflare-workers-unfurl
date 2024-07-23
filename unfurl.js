@@ -33,7 +33,22 @@ const validContentTypes = [
   "text/html",
   "application/xhtml+xml",
   "application/xml",
+  "image/*",
 ];
+
+/**
+ *
+ * @param {string} contentType
+ * @returns {boolean}
+ */
+function isValidContentType(contentType) {
+  return (
+    // allow unspecified, try to parse it anyway
+    !contentType ||
+    contentType.startsWith("image/") ||
+    validContentTypes.some((valid) => contentType.startsWith(valid))
+  );
+}
 
 /**
  * Handles the unfurling of a URL by extracting metadata such as title, description, image, and favicon.
@@ -62,13 +77,17 @@ export async function unfurl(url) {
       headers.append("accept", contentType);
     }
     const res = await fetch(url, { headers });
-    if (
-      !res.ok ||
-      !validContentTypes.some((contentType) =>
-        res.headers.get("content-type")?.includes(contentType)
-      )
-    ) {
+    if (!res.ok || !isValidContentType(res.headers.get("content-type") ?? "")) {
       return { ok: false, error: "failed-fetch" };
+    }
+    if (res.headers.get("content-type")?.startsWith("image/")) {
+      return {
+        ok: true,
+        value: {
+          image: url,
+          title: new URL(url).pathname.split("/").pop() || undefined,
+        },
+      };
     }
     await new HTMLRewriter()
       .on("meta", meta$)
