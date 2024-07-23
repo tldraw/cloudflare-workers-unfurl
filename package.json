@@ -1,6 +1,6 @@
 {
   "name": "cloudflare-workers-unfurl",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Unfurl urls in cloudflare workers using HTMLRewriter",
   "keywords": [
     "cloudflare",
