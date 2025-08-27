@@ -72,6 +72,11 @@ export async function unfurl(url) {
     for (const contentType of validContentTypes) {
       headers.append("accept", contentType);
     }
+    // Some sites block requests that don't have a user agent.
+    headers.append(
+      "user-agent",
+      "tldraw-bot/0.0.8 (+https://github.com/tldraw/cloudflare-workers-unfurl)"
+    );
     const res = await fetch(url, { headers });
     if (!res.ok || !isValidContentType(res.headers.get("content-type") ?? "")) {
       return { ok: false, error: "failed-fetch" };
