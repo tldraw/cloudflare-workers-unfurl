@@ -23,6 +23,8 @@
  * @property {string} [description] - The description extracted from the URL.
  * @property {string} [image] - The image URL extracted from the URL.
  * @property {string} [favicon] - The favicon URL extracted from the URL.
+ * @property {number} [imageWidth] - The intrinsic width of the image, if reported (og:image:width).
+ * @property {number} [imageHeight] - The intrinsic height of the image, if reported (og:image:height).
  */
 
 /**
@@ -72,10 +74,12 @@ export async function unfurl(url) {
     for (const contentType of validContentTypes) {
       headers.append("accept", contentType);
     }
-    // Some sites block requests that don't have a user agent.
+    // Some sites block requests that don't have a user agent. Others (notably YouTube) only serve
+    // their OpenGraph metadata to recognized crawler user-agents, so we include the
+    // `facebookexternalhit` token alongside our own bot identifier.
     headers.append(
       "user-agent",
-      "tldraw-bot/0.0.8 (+https://github.com/tldraw/cloudflare-workers-unfurl)"
+      "tldraw-bot/0.0.9 (+https://github.com/tldraw/cloudflare-workers-unfurl) facebookexternalhit/1.1"
     );
     const res = await fetch(url, { headers });
     if (!res.ok || !isValidContentType(res.headers.get("content-type") ?? "")) {
@@ -123,6 +127,9 @@ export async function unfurl(url) {
     favicon = new URL(favicon, url).href;
   }
 
+  const imageWidth = parseDimension(og["og:image:width"]);
+  const imageHeight = parseDimension(og["og:image:height"]);
+
   return {
     ok: true,
     value: {
@@ -130,8 +137,22 @@ export async function unfurl(url) {
       description,
       image,
       favicon,
+      imageWidth,
+      imageHeight,
     },
   };
+}
+
+/**
+ * Parses an OpenGraph dimension value (a string number of pixels) into a positive number, or
+ * returns undefined when it's missing or not a valid positive integer.
+ * @param {string|null|undefined} value
+ * @returns {number|undefined}
+ */
+function parseDimension(value) {
+  if (typeof value !== "string") return undefined;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
 }
 
 /**
