@@ -23,6 +23,8 @@
  * @property {string} [description] - The description extracted from the URL.
  * @property {string} [image] - The image URL extracted from the URL.
  * @property {string} [favicon] - The favicon URL extracted from the URL.
+ * @property {number} [imageWidth] - The intrinsic width of the image, if reported (og:image:width, falling back to twitter:player:width).
+ * @property {number} [imageHeight] - The intrinsic height of the image, if reported (og:image:height, falling back to twitter:player:height).
  */
 
 /**
@@ -123,6 +125,15 @@ export async function unfurl(url) {
     favicon = new URL(favicon, url).href;
   }
 
+  // Prefer the OpenGraph image dimensions, falling back to the Twitter player card dimensions
+  // (some providers, e.g. Vimeo, report both; others only one).
+  const imageWidth =
+    parseDimension(og["og:image:width"]) ??
+    parseDimension(twitter["twitter:player:width"]);
+  const imageHeight =
+    parseDimension(og["og:image:height"]) ??
+    parseDimension(twitter["twitter:player:height"]);
+
   return {
     ok: true,
     value: {
@@ -130,8 +141,22 @@ export async function unfurl(url) {
       description,
       image,
       favicon,
+      imageWidth,
+      imageHeight,
     },
   };
+}
+
+/**
+ * Parses an OpenGraph dimension value (a string number of pixels) into a positive number, or
+ * returns undefined when it's missing or not a valid positive integer.
+ * @param {string|null|undefined} value
+ * @returns {number|undefined}
+ */
+function parseDimension(value) {
+  if (typeof value !== "string") return undefined;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
 }
 
 /**

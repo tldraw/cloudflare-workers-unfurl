@@ -16,6 +16,8 @@ There are two exports: `unfurl` and `handleUnfurlRequest`.
 - `description`: The description of the page
 - `image`: The URL of the social image
 - `favicon`: The URL of the favicon
+- `imageWidth`: The intrinsic width of the social image, if reported (`og:image:width`, falling back to `twitter:player:width`)
+- `imageHeight`: The intrinsic height of the social image, if reported (`og:image:height`, falling back to `twitter:player:height`)
 
 ```js
 import { unfurl } from "cloudflare-workers-unfurl";
