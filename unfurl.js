@@ -74,12 +74,10 @@ export async function unfurl(url) {
     for (const contentType of validContentTypes) {
       headers.append("accept", contentType);
     }
-    // Some sites block requests that don't have a user agent. Others (notably YouTube) only serve
-    // their OpenGraph metadata to recognized crawler user-agents, so we include the
-    // `facebookexternalhit` token alongside our own bot identifier.
+    // Some sites block requests that don't have a user agent.
     headers.append(
       "user-agent",
-      "tldraw-bot/0.0.9 (+https://github.com/tldraw/cloudflare-workers-unfurl) facebookexternalhit/1.1"
+      "tldraw-bot/0.0.8 (+https://github.com/tldraw/cloudflare-workers-unfurl)"
     );
     const res = await fetch(url, { headers });
     if (!res.ok || !isValidContentType(res.headers.get("content-type") ?? "")) {
