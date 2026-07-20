@@ -23,8 +23,8 @@
  * @property {string} [description] - The description extracted from the URL.
  * @property {string} [image] - The image URL extracted from the URL.
  * @property {string} [favicon] - The favicon URL extracted from the URL.
- * @property {number} [imageWidth] - The intrinsic width of the image, if reported (og:image:width).
- * @property {number} [imageHeight] - The intrinsic height of the image, if reported (og:image:height).
+ * @property {number} [imageWidth] - The intrinsic width of the image, if reported (og:image:width, falling back to twitter:player:width).
+ * @property {number} [imageHeight] - The intrinsic height of the image, if reported (og:image:height, falling back to twitter:player:height).
  */
 
 /**
@@ -125,8 +125,14 @@ export async function unfurl(url) {
     favicon = new URL(favicon, url).href;
   }
 
-  const imageWidth = parseDimension(og["og:image:width"]);
-  const imageHeight = parseDimension(og["og:image:height"]);
+  // Prefer the OpenGraph image dimensions, falling back to the Twitter player card dimensions
+  // (some providers, e.g. Vimeo, report both; others only one).
+  const imageWidth =
+    parseDimension(og["og:image:width"]) ??
+    parseDimension(twitter["twitter:player:width"]);
+  const imageHeight =
+    parseDimension(og["og:image:height"]) ??
+    parseDimension(twitter["twitter:player:height"]);
 
   return {
     ok: true,
